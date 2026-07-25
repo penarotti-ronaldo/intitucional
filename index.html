@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado PMPR - Legislação Institucional</title>
+    <style>
+        /* --- Estilos --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f0f4fa;
+            color: #1a2639;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 12px 40px rgba(0, 20, 40, 0.10);
+            padding: 32px 35px 45px;
+        }
+        h1 {
+            font-size: 2.0rem;
+            font-weight: 700;
+            color: #0a2647;
+            border-bottom: 3px solid #dce6f2;
+            padding-bottom: 18px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        h1 small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #2d5a7e;
+            background: #eaf0f8;
+            padding: 4px 18px;
+            border-radius: 40px;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 40px 0 22px 0;
+            padding: 6px 22px;
+            background: #e9eff6;
+            border-radius: 40px;
+            display: inline-block;
+            color: #14365c;
+        }
+        .question-block {
+            background: #fafcff;
+            border: 1px solid #e3ecf5;
+            border-radius: 18px;
+            padding: 22px 26px;
+            margin-bottom: 22px;
+            transition: 0.1s;
+        }
+        .question-block.correct {
+            border-left: 7px solid #1a7a4a;
+            background: #f2fbf6;
+        }
+        .question-block.wrong {
+            border-left: 7px solid #b13a3a;
+            background: #fdf4f4;
+        }
+        .q-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .q-number {
+            font-weight: 700;
+            color: #1e3b60;
+            background: #e4edf6;
+            padding: 0 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            line-height: 30px;
+        }
+        .q-tag {
+            font-size: 0.75rem;
+            background: #d4e0ee;
+            padding: 0 16px;
+            border-radius: 40px;
+            line-height: 26px;
+            color: #1f3d61;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .q-text {
+            font-size: 1.08rem;
+            font-weight: 500;
+            margin: 6px 0 16px 0;
+            line-height: 1.6;
+            color: #0f253b;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 14px 0 12px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #f7faff;
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: 1px solid #dee9f3;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .option:hover { background: #ecf3fc; border-color: #b3cce3; }
+        .option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1a5b8c;
+            flex-shrink: 0;
+        }
+        .option label {
+            flex: 1;
+            cursor: pointer;
+            color: #142b44;
+            font-weight: 450;
+        }
+        .tf-options {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .tf-options label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            background: #f2f7fe;
+            padding: 8px 24px 8px 16px;
+            border-radius: 40px;
+            border: 1px solid #d2e0ef;
+            font-weight: 500;
+        }
+        .tf-options label:hover { background: #e5eefa; }
+        .feedback {
+            margin-top: 18px;
+            padding: 14px 20px;
+            border-radius: 16px;
+            background: #f1f6fc;
+            border: 1px solid #d3e2f0;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback .correct-msg { color: #0e6b3e; font-weight: 600; }
+        .feedback .wrong-msg { color: #b33a3a; font-weight: 600; }
+        .explain {
+            margin-top: 10px;
+            color: #1d3d5e;
+            font-size: 0.95rem;
+            border-top: 1px dashed #cbdae9;
+            padding-top: 12px;
+            line-height: 1.5;
+        }
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 40px;
+            padding-top: 22px;
+            border-top: 2px solid #e2eaf3;
+        }
+        .btn {
+            background: white;
+            border: 1px solid #c0d4e8;
+            padding: 10px 32px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #1a3b60;
+            cursor: pointer;
+            font-size: 0.95rem;
+            background: #f5f9ff;
+            transition: 0.15s;
+        }
+        .btn-primary {
+            background: #1a5b8c;
+            border-color: #1a5b8c;
+            color: white;
+        }
+        .btn-primary:hover { background: #0f446a; }
+        .btn-secondary { background: #eef3f9; border-color: #c4d5e9; }
+        .btn-secondary:hover { background: #dfe8f3; }
+        .btn-check-individual {
+            background: #e8f0fe;
+            border-color: #99b8d9;
+            padding: 5px 20px;
+            font-size: 0.85rem;
+            border-radius: 40px;
+            margin-left: 16px;
+            font-weight: 600;
+            color: #1c4c7a;
+        }
+        .btn-check-individual:hover { background: #d0e0f5; }
+        .score {
+            font-weight: 600;
+            background: #e9eff8;
+            padding: 8px 28px;
+            border-radius: 40px;
+            font-size: 1rem;
+        }
+        #result-area {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #0f3b5e;
+        }
+        @media (max-width: 680px) {
+            .container { padding: 18px; }
+            h1 { font-size: 1.6rem; }
+            .question-block { padding: 16px; }
+            .tf-options { gap: 12px; }
+        }
+        .footnote {
+            text-align: center;
+            color: #4b6f8f;
+            font-size: 0.9rem;
+            margin-top: 18px;
+        }
+        .coluna-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px 35px;
+            margin: 14px 0 8px;
+        }
+        .coluna-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: #f4f9ff;
+            padding: 6px 16px 6px 12px;
+            border-radius: 50px;
+            border: 1px solid #dae6f2;
+        }
+        .coluna-item select {
+            padding: 6px 14px;
+            border-radius: 40px;
+            border: 1px solid #b8cee5;
+            background: white;
+            font-size: 0.95rem;
+            min-width: 110px;
+            font-weight: 500;
+        }
+        .col-label { font-weight: 600; color: #14365c; min-width: 30px; }
+        .col-desc { background: #eaf1fa; padding: 2px 16px; border-radius: 40px; font-size: 0.9rem; color: #1f4468; }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <h1>
+        <span>📘 Simulado PMPR</span>
+        <small>41 questões · LIN 2026</small>
+    </h1>
+    
+    <div id="questions-container"></div>
+
+    <div class="action-bar">
+        <div>
+            <button class="btn btn-secondary" id="resetBtn">⟲ Reiniciar</button>
+            <button class="btn btn-primary" id="checkAllBtn">✅ Verificar todas</button>
+        </div>
+        <div class="score" id="scoreDisplay">0 / 0</div>
+    </div>
+    <div id="result-area"></div>
+    <div class="footnote">Baseado nas aulas 1 a 32 · Legislação Institucional PMPR · 11° BPM 2026</div>
+</div>
+<script>
+    (function(){
+        // ----- 41 questões: 25 V/F + 1 Correlação (5 itens) + 15 Objetivas -----
+        // Para a correlação, os itens serão embaralhados no render
+        const baseMatchItems = [
+            { left: '1. Direção', right: 'Comando-Geral, Estado-Maior, Diretorias (DGP, DEC, DS, DL)' },
+            { left: '2. Assessoramento', right: 'Gabinete do Comandante-Geral, Assessorias Policiais Militares, Centro de Comunicação Social (CCS)' },
+            { left: '3. Apoio', right: 'Junta Médica, Centro de Recrutamento e Seleção, Hospital da PM, Centro de Motomecanização' },
+            { left: '4. Execução', right: 'Batalhão de Polícia Militar (BPM), Companhia Independente, Batalhão de Polícia Rodoviária (BPRv)' },
+            { left: '5. Correição', right: 'Corregedoria-Geral (COGER), com funções de fiscalização e polícia judiciária militar' }
+        ];
+        // Ordem correta (para verificação)
+        const correctOrder = ['1', '2', '3', '4', '5'];
+
+        const questions = [
+            // ========== PARTE 1: VERDADEIRO OU FALSO (25 questões) ==========
+            { type: 'tf', topic: 'Organização', 
+              text: 'O Governador do Estado, na qualidade de Chefe do Poder Executivo, detém a maior autoridade sobre a PMPR, podendo expedir decretos para regulamentar estruturas operacionais e, ainda, conceder, cassar ou adiar licenças médicas para tratamento de saúde própria ou de familiar quando o período de afastamento for superior a 30 (trinta) dias.',
+              correct: true, 
+              explanation: 'Correto. O Governador é a autoridade máxima da PMPR e, conforme o art. 393, §6º do RISG/PMPR, as licenças superiores a 30 dias são de sua competência.' },
+            { type: 'tf', topic: 'Órgãos', 
+              text: 'A Corregedoria-Geral (COGER) é classificada como um órgão de direção setorial da PMPR, sendo sua principal atribuição o planejamento estratégico e a administração superior da Corporação, o que inclui a definição de diretrizes para a execução do policiamento ostensivo.',
+              correct: false, 
+              explanation: 'Errado. A COGER é um órgão de CORREIÇÃO (art. 44 da Lei 22.354/25), com atribuições de fiscalização e apuração de desvios. Os órgãos de direção geral são Comando-Geral, Subcomando e Estado-Maior.' },
+            { type: 'tf', topic: 'Órgãos', 
+              text: 'Os órgãos de execução, representados por unidades operacionais como Batalhões, Companhias e Pelotões, são os responsáveis diretos pela realização das atividades-fim da Corporação, ou seja, pelo policiamento ostensivo e pela preservação da ordem pública.',
+              correct: true, 
+              explanation: 'Correto. Conforme o art. 9º da Lei 22.354/25, os órgãos de execução destinam-se à realização das atividades-fim da PMPR.' },
+            { type: 'tf', topic: 'Direitos', 
+              text: 'Entre os direitos assegurados aos policiais militares no art. 112 da Lei nº 1.943/1954, está a garantia de julgamento em foro especial nos delitos militares, o que confere um tratamento processual distinto em razão da natureza da atividade militar.',
+              correct: true, 
+              explanation: 'Correto. O art. 112, alínea "i" da Lei 1.943/54, assegura o julgamento em foro especial para os delitos militares.' },
+            { type: 'tf', topic: 'Deveres', 
+              text: 'A legislação veda ao policial militar da ativa a participação ativa em firma comercial ou empresa industrial, mas permite o exercício de profissão liberal desde que haja correlação com as atividades institucionais e que isso não prejudique o serviço ou a imagem da Corporação.',
+              correct: true, 
+              explanation: 'Correto. O art. 107 da Lei 1.943/54 veda o comércio, mas permite a profissão liberal com correlação e sem prejuízo ao serviço.' },
+            { type: 'tf', topic: 'Remuneração', 
+              text: 'O sistema remuneratório dos militares estaduais é baseado em subsídio fixado em parcela única, sendo que o auxílio-alimentação, por possuir natureza indenizatória, não se incorpora a esse subsídio nem serve de base para cálculo de qualquer vantagem ou contribuição previdenciária.',
+              correct: true, 
+              explanation: 'Correto. Art. 1º da Lei 17.169/12 (subsídio) e art. 7º da Lei 20.937/21 (auxílio-alimentação não incorpora e não é base de contribuição).' },
+            { type: 'tf', topic: 'Indenização', 
+              text: 'Em caso de morte do policial militar em serviço, o Estado do Paraná paga aos herdeiros uma indenização de R$ 100.000,00 (cem mil reais). Já para os casos de invalidez permanente total, o valor máximo da indenização é de R$ 50.000,00 (cinquenta mil reais), conforme previsto no Decreto-Lei nº 3.494/2004.',
+              correct: true, 
+              explanation: 'Os valores são: Morte = R$ 100.000,00 (art. 3º); invalidez total = até R$ 50.000,00 (art. 4º).' },
+            { type: 'tf', topic: 'Promoção', 
+              text: 'A promoção por classe na carreira dos militares estaduais, que representa a evolução dentro de um mesmo posto ou graduação, ocorre automaticamente a cada 5 (cinco) anos de efetivo exercício, independentemente de avaliação de desempenho ou disponibilidade orçamentária.',
+              correct: false, 
+              explanation: 'Errado. A promoção por classe ocorre a cada 7 (sete) anos (art. 7º, §4º da Lei 17.169/12) e depende de disponibilidade orçamentária e decreto do Executivo (art. 7º, §7º).' },
+            { type: 'tf', topic: 'Férias', 
+              text: 'O planejamento das férias do efetivo é feito por meio de um Plano Anual, elaborado pela Seção de Pessoal (P/1) de cada OPM e enviado à Diretoria de Gestão de Pessoas até 30 de outubro. Esse plano deve respeitar o limite de 15% (quinze por cento) do efetivo total da unidade em gozo de férias simultaneamente.',
+              correct: true, 
+              explanation: 'Correto. Arts. 386 e 387, §2º do RISG/PMPR (Decreto 7.339/10).' },
+            { type: 'tf', topic: 'Licenças', 
+              text: 'A licença para tratamento da própria saúde (LTPS) pode ser concedida por até 4 (quatro) anos, sendo que os afastamentos superiores a 30 (trinta) dias são de competência do Comandante-Geral da PMPR, que pode conceder, cassar ou adiar tais licenças.',
+              correct: false, 
+              explanation: 'Errado. O art. 393, I do RISG estabelece a LTPS por até 4 anos, mas o §6º do mesmo artigo determina que licenças superiores a 30 dias, bem como suas prorrogações, são de competência do Governador do Estado, não do Comandante-Geral.' },
+            { type: 'tf', topic: 'Dispensas', 
+              text: 'A dispensa por luto (nojo) é concedida ao policial militar por um período de 8 (oito) dias consecutivos, contados a partir da data do falecimento, nos casos de morte de cônjuge, companheiro(a), filho(a), pai, mãe ou irmão(ã).',
+              correct: true, 
+              explanation: 'Correto. Art. 401, IV do RISG/PMPR.' },
+            { type: 'tf', topic: 'Saúde', 
+              text: 'Conforme a Portaria CG nº 864/2024, a apresentação de atestado médico com CID (Classificação Internacional de Doenças) relacionado a transtornos mentais e de comportamento determina o recolhimento imediato das armas de fogo de propriedade da PMPR e das armas particulares do militar, com a suspensão da autorização de porte até nova perícia oficial.',
+              correct: true, 
+              explanation: 'Correto. Art. 27, §15 e §16 da Portaria CG 864/2024 (e Anexo I).' },
+            { type: 'tf', topic: 'Tempo de Serviço', 
+              text: 'Na contagem do tempo de serviço do militar, os períodos de licença especial não gozada são contados em dobro, conforme previsão expressa no Código da PMPR (Lei nº 1.943/1954), o que representa um estímulo à fruição desse direito.',
+              correct: true, 
+              explanation: 'Correto. Art. 295 da Lei 1.943/54: licença especial não gozada é contada em dobro.' },
+            { type: 'tf', topic: 'Agregação', 
+              text: 'A agregação, que é uma forma de inatividade temporária, ocorre, entre outras hipóteses, quando o militar entra em gozo de licença para tratar de interesses particulares (LTIP) por um período superior a 6 (seis) meses, situação em que ele deixa de ser computado na escala numérica do efetivo.',
+              correct: true, 
+              explanation: 'Correto. Art. 283, "b" da Lei 1.943/54: LTIP > 6 meses é motivo de agregação.' },
+            { type: 'tf', topic: 'Reserva', 
+              text: 'A transferência para a reserva remunerada com proventos integrais exige que o militar tenha cumprido, no mínimo, 35 (trinta e cinco) anos de serviço público, dos quais pelo menos 30 (trinta) anos devem ser de efetivo exercício de atividade de natureza militar, conforme as regras gerais do Decreto-Lei nº 667/1969.',
+              correct: true, 
+              explanation: 'Correto. Art. 24-A, I, "a" do Decreto-Lei 667/69 (redação da Lei 14.751/23).' },
+            { type: 'tf', topic: 'Reingresso', 
+              text: 'A "reintegração" é o ato administrativo pelo qual uma praça excluída da PMPR retorna à Corporação, sem direito a qualquer ressarcimento de prejuízos, tendo apenas assegurada a contagem do tempo de serviço anterior para fins legais.',
+              correct: false, 
+              explanation: 'Errado. Essa é a definição de REINCLUSÃO (art. 274). A reintegração (art. 271) é para demitidos/excluídos por sentença judicial, com ressarcimento de prejuízo.' },
+            { type: 'tf', topic: 'Férias', 
+              text: 'Para gozar férias fora do território nacional, o militar deve solicitar autorização prévia da autoridade competente (Comandante-Geral ou Subcomandante), com antecedência mínima de 45 (quarenta e cinco) dias, por meio do canal de comando.',
+              correct: true, 
+              explanation: 'Correto. Art. 389, parágrafo único do RISG.' },
+            { type: 'tf', topic: 'Licenças', 
+              text: 'A licença à adotante, concedida à militar que adota legalmente criança ou adolescente, tem a mesma duração da licença gestante, ou seja, 180 (cento e oitenta) dias, contados a partir do trânsito em julgado da sentença de adoção.',
+              correct: true, 
+              explanation: 'Correto. Art. 393, V e VI do RISG: ambos 180 dias.' },
+            { type: 'tf', topic: 'Auxílio-Alimentação', 
+              text: 'O auxílio-alimentação, instituído pela Lei nº 20.937/2021, não será pago ao militar que estiver preso, por qualquer motivo, durante todo o período da prisão, independentemente de ser prisão civil, criminal ou administrativa.',
+              correct: true, 
+              explanation: 'Correto. Art. 5º, IV da Lei 20.937/21: não será pago ao militar preso.' },
+            { type: 'tf', topic: 'Boletim', 
+              text: 'O boletim interno da OPM é dividido em quatro partes, sendo que a primeira parte é destinada à publicação de punições disciplinares, elogios, soluções de processos administrativos e outros assuntos relacionados à justiça e disciplina da unidade.',
+              correct: false, 
+              explanation: 'Errado. A 1ª parte é destinada aos "serviços diários" (escalas, ordens do dia). A 4ª parte é que trata de "justiça e disciplina" (art. 304 do RISG).' },
+            { type: 'tf', topic: 'Direitos', 
+              text: 'O porte de arma de fogo é um direito assegurado ao oficial da PMPR, sendo que para as praças esse direito é regulamentado e condicionado a critérios estabelecidos pela Corporação, conforme previsto no art. 112 da Lei nº 1.943/1954.',
+              correct: true, 
+              explanation: 'Correto. Art. 112, alínea "p" da Lei 1.943/54: porte de armas, quando oficial (e regulamentado para praças).' },
+            { type: 'tf', topic: 'Deveres', 
+              text: 'O militar estadual, mesmo quando fora de serviço, deve pautar sua conduta pelos princípios da disciplina e da hierarquia, sendo essa uma exigência expressa no Código da PMPR, que estabelece a observância desses princípios em qualquer situação.',
+              correct: true, 
+              explanation: 'Correto. Art. 104 da Lei 1.943/54: "O militar deve conduzir-se, mesmo FORA DO SERVIÇO, de acordo com os princípios de disciplina."' },
+            { type: 'tf', topic: 'Licenças', 
+              text: 'A licença para tratar de interesses particulares (LTIP) pode ser concedida por até 2 (dois) anos, sendo que, se o período de afastamento for superior a 6 (seis) meses, o militar será agregado ao Quadro, deixando de contar tempo de serviço para todos os efeitos legais durante esse período.',
+              correct: true, 
+              explanation: 'Correto. Art. 393, III do RISG e art. 283, "b" da Lei 1.943/54 (agregação e não contagem de tempo para o oficial).' },
+            { type: 'tf', topic: 'Perícia Médica', 
+              text: 'A dispensa do serviço por motivo de saúde com atestado médico de até 4 (quatro) dias é concedida diretamente pelo Comandante da Unidade, sem necessidade de homologação pela Junta Médica, bastando a apresentação do documento na Seção de Pessoal.',
+              correct: true, 
+              explanation: 'Correto. Art. 27, §4º da Portaria CG 864/2024: até 4 dias, o comandante concede a dispensa.' },
+            { type: 'tf', topic: 'Tempo de Serviço', 
+              text: 'O tempo de serviço público prestado pelo militar em outros estados da Federação ou em municípios é computado integralmente para todos os efeitos legais na PMPR, inclusive para promoções e contagem de tempo para licenças especiais.',
+              correct: false, 
+              explanation: 'Errado. Art. 297: o tempo de serviço público prestado à União, outros Estados e Municípios é computado APENAS para transferência para a reserva remunerada e reforma.' },
+            { type: 'tf', topic: 'Reingresso', 
+              text: 'A reversão ao serviço ativo, que é o retorno do militar da reserva remunerada ou reformado, processa-se a pedido do interessado e assegura a contagem do tempo em que o militar permaneceu na inatividade, para fins de nova transferência para a reserva ou reforma.',
+              correct: true, 
+              explanation: 'Correto. Art. 277, §2º e §3º da Lei 1.943/54.' },
+
+            // ========== PARTE 2: CORRELACIONAR (1 questão com 5 itens - serão embaralhados) ==========
+            { 
+                type: 'match', topic: 'Órgãos PMPR', 
+                text: 'Relacione corretamente os tipos de órgãos que compõem a estrutura organizacional da PMPR (Coluna I) com os respectivos exemplos ou finalidades (Coluna II), considerando a classificação estabelecida na Lei nº 22.354/2025.',
+                items: baseMatchItems.slice(), // cópia para embaralhar
+                correctOrder: correctOrder.slice(),
+                explanation: 'A ordem correta é: 1-Direção, 2-Assessoramento, 3-Apoio, 4-Execução, 5-Correição. Essa classificação está nos arts. 6 a 10 e 44 da Lei nº 22.354/2025.'
+            },
+
+            // ========== PARTE 3: MÚLTIPLA ESCOLHA (15 questões) ==========
+            { type: 'obj', topic: 'Órgãos', 
+              text: 'De acordo com a Lei nº 22.354/2025, que estabelece a organização básica da PMPR, qual é a função primordial dos órgãos de apoio na estrutura da Corporação?',
+              options: [
+                  'Realizar o planejamento estratégico e a administração superior da Corporação.',
+                  'Prestar assessoria, consultoria e orientação técnica aos órgãos de direção.',
+                  'Atender às necessidades de pessoal, material, saúde, instrução e serviços, realizando as atividades-meio.',
+                  'Executar as atividades-fim de policiamento ostensivo e preservação da ordem pública.'
+              ],
+              correct: 2, 
+              explanation: 'Art. 8º da Lei 22.354/25: os órgãos de apoio realizam as atividades-meio, atendendo às necessidades de pessoal, semoventes, material e serviços.' },
+            { type: 'obj', topic: 'Deveres', 
+              text: 'Considerando os deveres estabelecidos no art. 102 da Lei nº 1.943/1954 (Código da PMPR), assinale a alternativa que apresenta uma obrigação legal do policial militar:',
+              options: [
+                  'Perceber o vencimento ou subsídio devido ao seu grau hierárquico.',
+                  'Usar, de forma privativa, os uniformes, insígnias e distintivos militares.',
+                  'Zelar pela honra e reputação de sua classe, mantendo conduta irrepreensível na vida pública e particular.',
+                  'Requerer, representar, pedir reconsideração e recorrer de decisões administrativas.'
+              ],
+              correct: 2, 
+              explanation: 'As demais alternativas são DIREITOS (art. 112). O dever de zelar pela honra está no art. 102, alínea "d".' },
+            { type: 'obj', topic: 'Reingresso', 
+              text: 'No contexto da inatividade militar, a "Reversão" é o ato administrativo que permite:',
+              options: [
+                  'O reingresso do militar demitido ou excluído, com direito a ressarcimento de prejuízos.',
+                  'O retorno da praça excluída à Corporação, sem direito a ressarcimento, apenas com contagem de tempo anterior.',
+                  'O retorno do militar da reserva remunerada ou reformado ao serviço ativo, por decisão judicial ou por cessação da incapacidade.',
+                  'A passagem definitiva do militar para a inatividade por invalidez ou idade limite.'
+              ],
+              correct: 2, 
+              explanation: 'Art. 277: reversão é o retorno ao serviço ativo do militar da reserva ou reformado, por sentença judicial ou quando provada a ilegalidade da transferência para a inatividade.' },
+            { type: 'obj', topic: 'Promoção', 
+              text: 'Na PMPR, a promoção por merecimento é um dos critérios de progressão na carreira. Para sua aplicação, são considerados diversos fatores, EXCETO:',
+              options: [
+                  'O desempenho funcional e a avaliação de conduta do militar.',
+                  'A conclusão de cursos e a participação em atividades de qualificação profissional.',
+                  'O histórico disciplinar e a existência de punições transitadas em julgado.',
+                  'O tempo de serviço no posto ou graduação, que é o único fator determinante.'
+              ],
+              correct: 3, 
+              explanation: 'O tempo de serviço é o critério principal para a promoção por antiguidade. A promoção por merecimento considera desempenho, cursos, histórico disciplinar, etc. (art. 14 da Lei 14.751/23).' },
+            { type: 'obj', topic: 'Perícia Médica', 
+              text: 'Segundo a Portaria CG nº 864/2024, ao apresentar um atestado médico que determine um afastamento de 5 (cinco) dias ou mais, qual é o procedimento administrativo correto que deve ser adotado pela OPM?',
+              options: [
+                  'A dispensa é concedida diretamente pelo Comandante da Unidade, sem necessidade de envio à Junta Médica.',
+                  'O atestado deve ser encaminhado à Junta Médica para homologação no prazo máximo de 72 (setenta e duas) horas.',
+                  'O militar deve aguardar o fim do afastamento para apresentar o atestado na Seção de Pessoal.',
+                  'O atestado é arquivado na pasta funcional, sendo facultativa a informação do CID.'
+              ],
+              correct: 1, 
+              explanation: 'Art. 27, §8º da Portaria CG 864/2024: atestados com 5 dias ou mais (ou somatória de 5 dias no mês) devem ser encaminhados à Junta Médica em até 72 horas para homologação.' },
+            { type: 'obj', topic: 'Tempo de Serviço', 
+              text: 'Durante uma operação policial de restabelecimento da ordem pública em uma área de grave perturbação, o tempo de serviço do militar envolvido na ação será contado de que forma, de acordo com o Código da PMPR?',
+              options: [
+                  'Normalmente, como tempo de efetivo serviço, sem qualquer acréscimo.',
+                  'Em dobro, por se tratar de expedição para restabelecer a ordem gravemente perturbada.',
+                  'Apenas para efeitos de promoção por merecimento, não influenciando na antiguidade.',
+                  'Com desconto dos dias de folga compensatórios, para fins de contagem.'
+              ],
+              correct: 1, 
+              explanation: 'Art. 295 da Lei 1.943/54: o tempo em operações de guerra ou para restabelecer a ordem gravemente perturbada é contado em dobro.' },
+            { type: 'obj', topic: 'Atividade Política', 
+              text: 'Um militar da ativa com mais de 10 (dez) anos de serviço decide se candidatar a um cargo eletivo. Conforme a Lei nº 14.751/2023 (Lei Orgânica Nacional das PMs), qual será sua situação funcional durante o processo eleitoral?',
+              options: [
+                  'Será afastado do serviço ativo, sem remuneração, a partir do registro da candidatura.',
+                  'Será agregado ao seu quadro, com remuneração, e, se eleito, passará para a reserva remunerada no ato da diplomação.',
+                  'Será imediatamente reformado, independentemente do resultado da eleição.',
+                  'Será transferido para a reserva não remunerada até o fim do mandato, se eleito.'
+              ],
+              correct: 1, 
+              explanation: 'Art. 22, II da Lei 14.751/23: o militar com mais de 10 anos de serviço será agregado com remuneração; se eleito, no ato da diplomação passa para a reserva remunerada.' },
+            { type: 'obj', topic: 'Agregação', 
+              text: 'Dentre as situações listadas abaixo, qual NÃO constitui motivo de agregação do militar estadual, conforme o art. 283 da Lei nº 1.943/1954?',
+              options: [
+                  'Licença para tratar de interesses particulares por período superior a 6 (seis) meses.',
+                  'Gozo de férias regulamentares de 30 (trinta) dias.',
+                  'Incapacidade física para o serviço militar, verificada após 12 meses de moléstia continuada.',
+                  'Cumprimento de pena privativa de liberdade por tempo não superior a 2 (dois) anos.'
+              ],
+              correct: 1, 
+              explanation: 'Férias não geram agregação. Os motivos estão no art. 283 da Lei 1.943/54: LTIP > 6 meses, incapacidade > 12 meses, pena ≤ 2 anos, deserção, extravio, cargo civil, mandato eletivo.' },
+            { type: 'obj', topic: 'Auxílio-Alimentação', 
+              text: 'O auxílio-alimentação, instituído pela Lei nº 20.937/2021, possui natureza jurídica específica. Assinale a alternativa que define corretamente essa natureza e seus efeitos:',
+              options: [
+                  'Salarial, pois integra o subsídio do militar e serve de base para cálculo de contribuições previdenciárias.',
+                  'Indenizatória, não se incorporando ao subsídio, não sendo tributável e não servindo de base para contribuição previdenciária.',
+                  'Previdenciária, pois é utilizada como base de cálculo para a aposentadoria e pensão militar.',
+                  'Tributável, pois está sujeita à incidência de imposto de renda na fonte.'
+              ],
+              correct: 1, 
+              explanation: 'Art. 2º e 7º da Lei 20.937/21: natureza indenizatória, não incorpora ao subsídio, não é tributável e não serve de base para contribuição previdenciária.' },
+            { type: 'obj', topic: 'Licença Especial', 
+              text: 'A licença especial, concedida ao militar a cada decênio de serviço, tem uma limitação quanto ao número de militares que podem usufruí-la simultaneamente na mesma unidade. Qual é esse limite, conforme o RISG/PMPR?',
+              options: [
+                  '15% (quinze por cento) do efetivo total da unidade.',
+                  '10% (dez por cento) do efetivo da unidade, computados separadamente oficiais e praças.',
+                  '5% (cinco por cento) do efetivo de praças da unidade.',
+                  '20% (vinte por cento) do efetivo de oficiais da unidade.'
+              ],
+              correct: 1, 
+              explanation: 'Art. 395 do RISG: o número de licenciados não pode ultrapassar 10% do efetivo da unidade, computados separadamente oficiais e praças.' },
+            { type: 'obj', topic: 'Dispensas', 
+              text: 'A dispensa por motivo de "nojo" (luto) é concedida ao militar em razão do falecimento de determinados familiares. Assinale a alternativa que apresenta corretamente o parentesco e a duração dessa dispensa:',
+              options: [
+                  '8 (oito) dias para falecimento de tio, sobrinho ou avô.',
+                  '5 (cinco) dias para falecimento de cônjuge, filho, pai, mãe ou irmão.',
+                  '8 (oito) dias para falecimento de cônjuge, filho, pai, mãe ou irmão.',
+                  '10 (dez) dias para falecimento de qualquer familiar de primeiro grau.'
+              ],
+              correct: 2, 
+              explanation: 'Art. 401, IV do RISG: nojo = 8 dias, contados do falecimento do cônjuge, filho, pai, mãe ou irmão.' },
+            { type: 'obj', topic: 'Perícia Médica', 
+              text: 'Quando um militar estadual é avaliado pela Junta Médica e considerado apto para o serviço, mas se recusa a assinar o termo de ciência do resultado, qual procedimento deve ser adotado?',
+              options: [
+                  'O resultado é considerado nulo e uma nova perícia é agendada.',
+                  'A recusa é certificada e a determinação é lida na presença de 2 (duas) testemunhas, que assinam a certidão.',
+                  'O militar é automaticamente encaminhado para uma nova avaliação psiquiátrica.',
+                  'O caso é arquivado e o militar permanece em sua função sem alterações.'
+              ],
+              correct: 1, 
+              explanation: 'Art. 22, §3º da Portaria CG 864/2024: a recusa deve ser certificada e lida na presença de 2 testemunhas.' },
+            { type: 'obj', topic: 'Reserva', 
+              text: 'A idade limite para permanência na reserva remunerada, após a qual o militar é transferido para a reforma, varia conforme o posto ou graduação. Para um 1º Sargento da PMPR, essa idade limite é de:',
+              options: [
+                  '55 (cinquenta e cinco) anos.',
+                  '56 (cinquenta e seis) anos.',
+                  '58 (cinquenta e oito) anos.',
+                  '60 (sessenta) anos.'
+              ],
+              correct: 2, 
+              explanation: 'Art. 163 da Lei 1.943/54: para Subtenente e Sargentos, a idade limite na reserva é de 58 anos.' },
+            { type: 'obj', topic: 'Boletim', 
+              text: 'O boletim interno, como documento oficial de publicidade dos atos administrativos, deve ser confeccionado dentro de um prazo. Segundo o RISG/PMPR, qual é a orientação para a conclusão do boletim?',
+              options: [
+                  'Deve estar pronto até uma hora antes do fim do expediente.',
+                  'Deve ser publicado impreterivelmente no início do expediente.',
+                  'Pode ser concluído até as 12h do dia seguinte.',
+                  'Não há prazo definido, podendo ser publicado a qualquer momento.'
+              ],
+              correct: 0, 
+              explanation: 'Art. 307 do RISG: normalmente, o boletim deve estar pronto até uma hora antes do fim do expediente.' },
+            { type: 'obj', topic: 'Agregação', 
+              text: 'Um oficial da PMPR é nomeado para exercer um cargo de natureza civil em um órgão da administração pública estadual. De acordo com o art. 283 da Lei nº 1.943/1954, essa situação resultará em:',
+              options: [
+                  'Agregação, com a contagem de tempo de serviço para todos os efeitos legais.',
+                  'Agregação, com a abertura de vaga no respectivo Quadro, sem contagem de tempo para alguns efeitos.',
+                  'Adição, sem perda de vaga no Quadro e com contagem normal de tempo.',
+                  'Afastamento sem qualquer alteração na situação funcional.'
+              ],
+              correct: 1, 
+              explanation: 'Art. 283, §2º, "g": o oficial que agregar por exercício de cargo de natureza civil DEIXA vaga no Quadro. O tempo em agregação por esse motivo não conta para alguns efeitos (art. 283, §1º, não se aplica à alínea "g", que não está no §1º).' }
+        ];
+
+        // ----- Lógica de renderização e interação -----
+        const container = document.getElementById('questions-container');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const resultArea = document.getElementById('result-area');
+
+        let answers = {};
+        let revealed = {};
+
+        // Função para embaralhar array (Fisher-Yates)
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Embaralha os itens da questão de correlação (índice 25)
+        const matchIdx = 25;
+        if (questions[matchIdx] && questions[matchIdx].type === 'match') {
+            // Embaralha os itens, mas guarda a ordem correta original
+            const originalItems = questions[matchIdx].items.slice();
+            questions[matchIdx].items = shuffleArray(originalItems);
+            // A ordem correta continua sendo ['1','2','3','4','5'] (os left labels)
+            questions[matchIdx].correctOrder = ['1', '2', '3', '4', '5'];
+        }
+
+        function renderQuestions() {
+            let html = '';
+            const sections = [
+                { title: 'Parte 1: Verdadeiro ou Falso (25 questões)', start: 0, end: 24 },
+                { title: 'Parte 2: Correlacionar Colunas (1 questão com 5 itens)', start: 25, end: 25 },
+                { title: 'Parte 3: Múltipla Escolha (15 questões)', start: 26, end: 40 }
+            ];
+
+            sections.forEach(section => {
+                html += `<div class="section-title">${section.title}</div>`;
+                for (let i = section.start; i <= section.end && i < questions.length; i++) {
+                    const q = questions[i];
+                    const isRevealed = revealed[i] || false;
+                    const answer = answers[i];
+                    const isCorrect = (answer !== undefined && answer === q.correct);
+
+                    let cardClass = 'question-block';
+                    if (isRevealed) {
+                        cardClass += (isCorrect) ? ' correct' : ' wrong';
+                    }
+                    html += `<div class="${cardClass}" id="qcard-${i}">`;
+                    html += `<div class="q-header"><span class="q-number">Q${i+1}</span><span class="q-tag">${q.topic}</span>`;
+                    html += `<button class="btn-check-individual" data-q="${i}">✔️ Verificar</button>`;
+                    html += `</div>`;
+                    html += `<div class="q-text">${q.text}</div>`;
+
+                    if (q.type === 'tf') {
+                        html += `<div class="tf-options">`;
+                        const vChecked = (answer === true) ? 'checked' : '';
+                        const fChecked = (answer === false) ? 'checked' : '';
+                        html += `<label><input type="radio" name="q${i}" value="true" ${vChecked}> Verdadeiro</label>`;
+                        html += `<label><input type="radio" name="q${i}" value="false" ${fChecked}> Falso</label>`;
+                        html += `</div>`;
+                    } else if (q.type === 'match') {
+                        html += `<div class="coluna-container">`;
+                        q.items.forEach((item, idx) => {
+                            const selectedVal = answers[`${i}_${idx}`] || '';
+                            html += `<div class="coluna-item">`;
+                            html += `<span class="col-label">${item.left}</span>`;
+                            html += `<span class="col-desc">⟷</span>`;
+                            html += `<select data-q="${i}" data-idx="${idx}">`;
+                            html += `<option value="">Selecione...</option>`;
+                            // Opções de 1 a 5 (os números da Coluna I)
+                            for (let opt = 1; opt <= 5; opt++) {
+                                const selected = (selectedVal === String(opt)) ? 'selected' : '';
+                                html += `<option value="${opt}" ${selected}>${opt}</option>`;
+                            }
+                            html += `</select>`;
+                            html += `<span style="font-size:0.9rem; color:#2d5a7e;">${item.right}</span>`;
+                            html += `</div>`;
+                        });
+                        html += `</div>`;
+                    } else if (q.type === 'obj') {
+                        html += `<div class="options">`;
+                        q.options.forEach((opt, optIdx) => {
+                            const checked = (answer === optIdx) ? 'checked' : '';
+                            html += `<div class="option">`;
+                            html += `<input type="radio" name="q${i}" value="${optIdx}" ${checked}>`;
+                            html += `<label>${opt}</label>`;
+                            html += `</div>`;
+                        });
+                        html += `</div>`;
+                    }
+
+                    // Feedback
+                    let fbClass = 'feedback';
+                    if (isRevealed) fbClass += ' show';
+                    html += `<div class="${fbClass}" id="fb-${i}">`;
+                    if (isRevealed) {
+                        const msg = isCorrect ? '✅ Correto!' : '❌ Incorreto.';
+                        const cls = isCorrect ? 'correct-msg' : 'wrong-msg';
+                        html += `<div class="${cls}">${msg}</div>`;
+                        if (q.explanation) {
+                            html += `<div class="explain">📘 ${q.explanation}</div>`;
+                        }
+                    }
+                    html += `</div>`;
+                    html += `</div>`;
+                }
+            });
+
+            container.innerHTML = html;
+            attachEvents();
+            updateScore();
+        }
+
+        function attachEvents() {
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.addEventListener('change', function(e) {
+                    const name = this.name;
+                    const idx = parseInt(name.replace('q',''));
+                    let value;
+                    if (this.value === 'true') value = true;
+                    else if (this.value === 'false') value = false;
+                    else value = parseInt(this.value);
+                    answers[idx] = value;
+                    if (revealed[idx]) {
+                        delete revealed[idx];
+                        const card = document.getElementById(`qcard-${idx}`);
+                        if (card) card.classList.remove('correct', 'wrong');
+                        const fb = document.getElementById(`fb-${idx}`);
+                        if (fb) fb.classList.remove('show');
+                    }
+                    updateScore();
+                });
+            });
+
+            document.querySelectorAll('.coluna-item select').forEach(select => {
+                select.addEventListener('change', function(e) {
+                    const qIdx = parseInt(this.dataset.q);
+                    const itemIdx = parseInt(this.dataset.idx);
+                    const key = `${qIdx}_${itemIdx}`;
+                    answers[key] = this.value;
+                    if (revealed[qIdx]) {
+                        delete revealed[qIdx];
+                        const card = document.getElementById(`qcard-${qIdx}`);
+                        if (card) card.classList.remove('correct', 'wrong');
+                        const fb = document.getElementById(`fb-${qIdx}`);
+                        if (fb) fb.classList.remove('show');
+                    }
+                    updateScore();
+                });
+            });
+
+            document.querySelectorAll('.btn-check-individual').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const idx = parseInt(this.dataset.q);
+                    const q = questions[idx];
+                    let isAnswered = false;
+                    if (q.type === 'match') {
+                        let allFilled = true;
+                        for (let j = 0; j < q.items.length; j++) {
+                            const key = `${idx}_${j}`;
+                            if (answers[key] === undefined || answers[key] === '') {
+                                allFilled = false;
+                                break;
+                            }
+                        }
+                        if (allFilled) isAnswered = true;
+                    } else {
+                        if (answers[idx] !== undefined) isAnswered = true;
+                    }
+                    if (!isAnswered) {
+                        alert('⚠️ Responda a questão antes de verificar.');
+                        return;
+                    }
+                    revealed[idx] = true;
+                    const card = document.getElementById(`qcard-${idx}`);
+                    if (card) {
+                        const isCorrect = (q.type === 'match') ? checkMatchCorrect(idx) : (answers[idx] === q.correct);
+                        card.classList.remove('correct', 'wrong');
+                        card.classList.add(isCorrect ? 'correct' : 'wrong');
+                        const fb = document.getElementById(`fb-${idx}`);
+                        if (fb) {
+                            fb.classList.add('show');
+                            const msg = isCorrect ? '✅ Correto!' : '❌ Incorreto.';
+                            const cls = isCorrect ? 'correct-msg' : 'wrong-msg';
+                            fb.innerHTML = `<div class="${cls}">${msg}</div>` + (q.explanation ? `<div class="explain">📘 ${q.explanation}</div>` : '');
+                        }
+                    }
+                    updateScore();
+                });
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', resetAll);
+            document.getElementById('checkAllBtn').addEventListener('click', checkAll);
+        }
+
+        function checkMatchCorrect(idx) {
+            const q = questions[idx];
+            for (let j = 0; j < q.items.length; j++) {
+                const key = `${idx}_${j}`;
+                // Verifica se a resposta selecionada é o número correto (left label)
+                if (answers[key] !== q.items[j].left.charAt(0)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function isQuestionAnswered(idx) {
+            const q = questions[idx];
+            if (q.type === 'match') {
+                for (let j = 0; j < q.items.length; j++) {
+                    const key = `${idx}_${j}`;
+                    if (answers[key] === undefined || answers[key] === '') {
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                return answers[idx] !== undefined;
+            }
+        }
+
+        function updateScore() {
+            const total = questions.length;
+            let answered = 0;
+            let correct = 0;
+            for (let i = 0; i < total; i++) {
+                const q = questions[i];
+                let isAnswered = false;
+                let isCorrect = false;
+                if (q.type === 'match') {
+                    let allAnswered = true;
+                    let allCorrect = true;
+                    for (let j = 0; j < q.items.length; j++) {
+                        const key = `${i}_${j}`;
+                        if (answers[key] === undefined || answers[key] === '') {
+                            allAnswered = false;
+                            break;
+                        }
+                        if (answers[key] !== q.items[j].left.charAt(0)) {
+                            allCorrect = false;
+                        }
+                    }
+                    if (allAnswered) {
+                        isAnswered = true;
+                        if (revealed[i] && allCorrect) isCorrect = true;
+                    }
+                } else {
+                    if (answers[i] !== undefined) {
+                        isAnswered = true;
+                        if (revealed[i] && answers[i] === q.correct) isCorrect = true;
+                    }
+                }
+                if (isAnswered) answered++;
+                if (isCorrect) correct++;
+            }
+
+            if (Object.keys(revealed).length === 0) {
+                scoreDisplay.textContent = `${answered} / ${total}`;
+                resultArea.innerHTML = '';
+                return;
+            }
+
+            let totalRev = 0, correctRev = 0;
+            for (let i = 0; i < total; i++) {
+                if (revealed[i]) {
+                    totalRev++;
+                    const q = questions[i];
+                    if (q.type === 'match') {
+                        if (checkMatchCorrect(i)) correctRev++;
+                    } else {
+                        if (answers[i] === q.correct) correctRev++;
+                    }
+                }
+            }
+            const percent = Math.round((correctRev / totalRev) * 100);
+            const nota = Math.round((correctRev / totalRev) * 100);
+            scoreDisplay.textContent = `${correctRev} / ${totalRev}`;
+            if (totalRev === total) {
+                resultArea.innerHTML = `<span style="color:#1d6b3e;">✅ Simulado finalizado!<br>Acertos: ${correctRev} de ${total} (${percent}%)<br>Nota: ${nota}/100</span>`;
+            } else {
+                resultArea.innerHTML = `<span style="color:#1d6b3e;">📊 Parcial: ${correctRev} de ${totalRev} verificadas (${percent}%)</span>`;
+            }
+        }
+
+        function checkAll() {
+            let allAnswered = true;
+            for (let i = 0; i < questions.length; i++) {
+                if (!isQuestionAnswered(i)) {
+                    allAnswered = false;
+                    break;
+                }
+            }
+            if (!allAnswered) {
+                if (!confirm('⚠️ Você ainda não respondeu todas as questões. Deseja verificar mesmo assim?')) {
+                    return;
+                }
+            }
+            for (let i = 0; i < questions.length; i++) {
+                revealed[i] = true;
+            }
+            renderQuestions();
+            updateScore();
+        }
+
+        function resetAll() {
+            answers = {};
+            revealed = {};
+            renderQuestions();
+            resultArea.innerHTML = '';
+            scoreDisplay.textContent = '0 / 0';
+        }
+
+        renderQuestions();
+    })();
+</script>
+</body>
+</html>
